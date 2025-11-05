@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>北海道旅行计划</title>
+    <title>日本旅行计划总览 - 北海道+九州</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
@@ -47,38 +47,83 @@
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
         rel="stylesheet">
+    <!-- 路由核心样式 -->
+    <style>
+        /* 未激活的页面隐藏 */
+        .page {
+            display: none;
+        }
+
+        /* 激活的页面显示 */
+        .page.active {
+            display: block;
+        }
+
+        /* 图片懒加载基础样式 */
+        img[data-src] {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        img[data-src].loaded {
+            opacity: 1;
+        }
+
+        /* 解决时间线最后一个点的线过长问题 */
+        .timeline-container:last-child .timeline-line {
+            display: none;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 text-dark">
-    <!-- 头部横幅 -->
+    <!-- 头部横幅（通用） -->
     <header class="relative h-[50vh] min-h-[400px] overflow-hidden">
         <div class="absolute inset-0 bg-cover bg-center"
             style="background-image: url('https://picsum.photos/id/1036/1600/900'); filter: brightness(0.7);"></div>
         <div class="absolute inset-0 flex items-center justify-center justify-center">
             <div class="text-center text-white px-4">
-                <h1 class="text-[clamp(2rem,5vw,4rem)] font-bold mb-4 text-shadow">北海道旅行计划</h1>
-                <p class="text-[clamp(1rem,2vw,1.5rem)] max-w-3xl mx-auto text-shadow">11月21日 - 11月29日 函馆·登别·札幌·旭川</p>
+                <h1 class="text-[clamp(2rem,5vw,4rem)] font-bold mb-4 text-shadow">日本旅行计划总览</h1>
+                <p class="text-[clamp(1rem,2vw,1.5rem)] max-w-3xl mx-auto text-shadow">北海道9天8夜 + 九州8天7夜</p>
             </div>
         </div>
         <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
     </header>
 
-    <!-- 导航栏 -->
-    <nav class="sticky top-0 z-50 bg-white shadow shadow-md">
+    <!-- 新增：页面切换主导航（最顶部） -->
+    <div class="bg-gray-100 sticky top-0 z-60 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center space-x-4 py-3">
+                <button id="btn-hokkaido"
+                    class="px-6 py-2 bg-primary text-white rounded-full font-medium transition-all hover:shadow-md">
+                    北海道（9天）
+                </button>
+                <button id="btn-kyushu"
+                    class="px-6 py-2 bg-white text-primary border border-primary rounded-full font-medium transition-all hover:shadow-md">
+                    九州（8天）
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导航栏（日期导航） -->
+    <nav class="sticky top-16 z-50 bg-white shadow shadow-md">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
-                <a href="#" class="text-primary font-bold text-xl">北海道之旅</a>
-                <div class="hidden md:flex space-x-6">
-                    <a href="#day1" class="hover:text-primary transition-colors">11.21</a>
-                    <a href="#day2" class="hover:text-primary transition-colors">11.22</a>
-                    <a href="#day3" class="hover:text-primary transition-colors">11.23</a>
-                    <a href="#day4" class="hover:text-primary transition-colors">11.24</a>
-                    <a href="#day5" class="hover:text-primary transition-colors">11.25</a>
-                    <a href="#day6" class="hover:text-primary transition-colors">11.26</a>
-                    <a href="#day7" class="hover:text-primary transition-colors">11.27</a>
-                    <a href="#day8" class="hover:text-primary transition-colors">11.28</a>
-                    <a href="#day9" class="hover:text-primary transition-colors">11.29</a>
-                    <a href="#supplement" class="hover:text-primary transition-colors">补充信息</a>
+                <a href="#" class="text-primary font-bold text-xl">旅行计划详情</a>
+                <!-- 桌面端日期导航 -->
+                <div class="hidden md:flex space-x-4">
+                    <!-- 北海道日期导航 -->
+                    <a href="#hokkaido-day1" class="hover:text-primary transition-colors">北海道11.21</a>
+                    <a href="#hokkaido-day2" class="hover:text-primary transition-colors">11.22</a>
+                    <a href="#hokkaido-day3" class="hover:text-primary transition-colors">11.23</a>
+                    <a href="#hokkaido-day4" class="hover:text-primary transition-colors">11.24</a>
+                    <span class="text-gray-300">|</span>
+                    <!-- 九州日期导航 -->
+                    <a href="#kyushu-day1" class="hover:text-primary transition-colors">九州Day1</a>
+                    <a href="#kyushu-day2" class="hover:text-primary transition-colors">Day2</a>
+                    <a href="#kyushu-day3" class="hover:text-primary transition-colors">Day3</a>
+                    <a href="#kyushu-day4" class="hover:text-primary transition-colors">Day4</a>
                 </div>
                 <button class="md:hidden text-dark" id="menuToggle">
                     <i class="fa fa-bars text-xl"></i>
@@ -88,787 +133,933 @@
         <!-- 移动端菜单 -->
         <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg absolute w-full">
             <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
-                <a href="#day1" class="py-2 hover:text-primary transition-colors">11.21</a>
-                <a href="#day2" class="py-2 hover:text-primary transition-colors">11.22</a>
-                <a href="#day3" class="py-2 hover:text-primary transition-colors">11.23</a>
-                <a href="#day4" class="py-2 hover:text-primary transition-colors">11.24</a>
-                <a href="#day5" class="py-2 hover:text-primary transition-colors">11.25</a>
-                <a href="#day6" class="py-2 hover:text-primary transition-colors">11.26</a>
-                <a href="#day7" class="py-2 hover:text-primary transition-colors">11.27</a>
-                <a href="#day8" class="py-2 hover:text-primary transition-colors">11.28</a>
-                <a href="#day9" class="py-2 hover:text-primary transition-colors">11.29</a>
-                <a href="#supplement" class="py-2 hover:text-primary transition-colors">补充信息</a>
+                <!-- 北海道移动端导航 -->
+                <p class="text-gray-500 font-medium mt-2">北海道行程</p>
+                <a href="#hokkaido-day1" class="py-2 hover:text-primary transition-colors">11.21 函馆</a>
+                <a href="#hokkaido-day2" class="py-2 hover:text-primary transition-colors">11.22 函馆</a>
+                <a href="#hokkaido-day3" class="py-2 hover:text-primary transition-colors">11.23 登别</a>
+                <a href="#hokkaido-day4" class="py-2 hover:text-primary transition-colors">11.24 登别</a>
+                <a href="#hokkaido-day5" class="py-2 hover:text-primary transition-colors">11.25 札幌</a>
+                <a href="#hokkaido-day6" class="py-2 hover:text-primary transition-colors">11.26 小樽</a>
+                <a href="#hokkaido-day7" class="py-2 hover:text-primary transition-colors">11.27 旭川</a>
+                <a href="#hokkaido-day8" class="py-2 hover:text-primary transition-colors">11.28 美瑛</a>
+                <a href="#hokkaido-day9" class="py-2 hover:text-primary transition-colors">11.29 返程</a>
+                <a href="#hokkaido-supplement" class="py-2 hover:text-primary transition-colors">补充信息</a>
+
+                <!-- 九州移动端导航 -->
+                <p class="text-gray-500 font-medium mt-4">九州行程</p>
+                <a href="#kyushu-day1" class="py-2 hover:text-primary transition-colors">Day1 福冈</a>
+                <a href="#kyushu-day2" class="py-2 hover:text-primary transition-colors">Day2 福冈→长崎</a>
+                <a href="#kyushu-day3" class="py-2 hover:text-primary transition-colors">Day3 长崎</a>
+                <a href="#kyushu-day4" class="py-2 hover:text-primary transition-colors">Day4 长崎→熊本</a>
+                <a href="#kyushu-day5" class="py-2 hover:text-primary transition-colors">Day5 熊本→由布院</a>
+                <a href="#kyushu-day6" class="py-2 hover:text-primary transition-colors">Day6 由布院→别府</a>
+                <a href="#kyushu-day7" class="py-2 hover:text-primary transition-colors">Day7 别府→福冈</a>
+                <a href="#kyushu-day8" class="py-2 hover:text-primary transition-colors">Day8 福冈返程</a>
             </div>
         </div>
     </nav>
 
-    <!-- 主内容区 -->
+    <!-- 主内容区（双页面容器） -->
     <main class="container mx-auto px-4 py-12">
-        <!-- 旅行概览 -->
-        <section class="mb-16 text-center">
-            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6 text-primary">旅行概览</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                <div class="bg-white rounded-lg shadow p-6 card-hover">
-                    <i class="fa fa-calendar text-3xl text-primary mb-4"></i>
-                    <h3 class="font-semibold text-lg mb-2">9天8晚</h3>
-                    <p class="text-gray-600">11月21日 - 11月29日</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6 card-hover">
-                    <i class="fa fa-map-marker text-3xl text-primary mb-4"></i>
-                    <h3 class="font-semibold text-lg mb-2">4个城市</h3>
-                    <p class="text-gray-600">函馆、登别、札幌、旭川</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6 card-hover">
-                    <i class="fa fa-train text-3xl text-primary mb-4"></i>
-                    <h3 class="font-semibold text-lg mb-2">JR交通</h3>
-                    <p class="text-gray-600">利用JR Pass畅游</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6 card-hover">
-                    <i class="fa fa-camera text-3xl text-primary mb-4"></i>
-                    <h3 class="font-semibold text-lg mb-2">景点巡礼</h3>
-                    <p class="text-gray-600">函馆山夜景、小樽运河等</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 每日行程 -->
-        <section class="max-w-5xl mx-auto">
-            <!-- 第1天 -->
-            <div id="day1" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.21 <span class="text-lg font-normal ml-2">住函馆</span></h2>
+        <!-- 北海道页面（完整内容） -->
+        <div class="page active" id="page-hokkaido">
+            <!-- 旅行概览 -->
+            <section class="mb-16 text-center">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6 text-primary">北海道9天8夜旅行概览</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-calendar text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">9天8晚</h3>
+                        <p class="text-gray-600">11月21日 - 11月29日</p>
                     </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-plane text-secondary mr-2"></i>上午
-                            </h3>
-                            <p class="ml-6">jsj：0830-1300 到新千岁机场</p>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-map-marker text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">4个城市</h3>
+                        <p class="text-gray-600">函馆、登别、札幌、旭川</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-train text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">JR交通</h3>
+                        <p class="text-gray-600">利用JR Pass畅游</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-camera text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">景点巡礼</h3>
+                        <p class="text-gray-600">函馆山夜景、小樽运河等</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 每日行程 -->
+            <section class="max-w-5xl mx-auto">
+                <!-- 第1天 -->
+                <div id="hokkaido-day1" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.21 <span class="text-lg font-normal ml-2">住函馆</span></h2>
                         </div>
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-train text-secondary mr-2"></i>下午
-                            </h3>
-                            <p class="ml-6">新千岁-函馆 1350-1713</p>
-                            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-21.png" alt="新千岁-函馆" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">新千岁-函馆</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-34.png" alt="特急北斗南千岁函馆" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">特急北斗南千岁函馆</p>
-                                </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-plane text-secondary mr-2"></i>上午
+                                </h3>
+                                <p class="ml-6">jsj：0830-1300 到新千岁机场</p>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 第2天 -->
-            <div id="day2" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.22 <span class="text-lg font-normal ml-2">住函馆</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-map-o text-secondary mr-2"></i>行程安排
-                            </h3>
-                            <ul class="ml-6 list-disc space-y-2">
-                                <li>第一天步行金森仓库，八幡坂，函馆山夜景</li>
-                                <li>第二天上午去五棱郭公园，下午去大沼公园P17，可以从JR函馆站坐JR20分钟达到</li>
-                            </ul>
-                            <div class="mt-4">
-                                <img data-src="image-22.png" alt="时刻表" class="w-full h-auto">
-                                <p class="text-sm text-gray-600 mt-1">时刻表</p>
-                            </div>
-                            <p class="mt-4 ml-6">看小红书去年11.18是秋末冬初的景色（下图1、2），感觉可以落地直接函馆赌一下红叶（五棱郭公园），概率也很小就是了</p>
-                        </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-4">主要景点</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="c2ba05a4726545cb8e917a70d134e3dc.jpg" alt="函馆红叶"
-                                        class="w-full h-auto">
-                                    <p class="text-center text-sm font-medium p-2">五棱郭公园</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-19.png" alt="国定公园" class="w-full h-auto">
-                                    <p class="text-center text-sm font-medium p-2">大沼国定公园</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-20.png" alt="修道院" class="w-full h-auto">
-                                    <p class="text-center text-sm font-medium p-2">修道院</p>
-                                </div>
-                            </div>
-                            <p class="mt-4 ml-6">还有函馆山、红砖仓库等等的</p>
-                        </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-detective text-secondary mr-2"></i>柯南巡礼路线
-                            </h3>
-                            <ul class="ml-6 space-y-4">
-                                <li>
-                                    <p class="font-medium">📍JR函馆站（P2）</p>
-                                    <p class="text-gray-700">🗺️所有行程的开始，札幌->函馆JR特级北斗号的终点站。</p>
-                                </li>
-                                <li>
-                                    <p class="font-medium">📍普乐美雅凯酒店（P3-P4）</p>
-                                    <p class="text-gray-700">
-                                        🗺️在JR函馆站隔壁，步行160米，是柯南动漫里的，酒店很不错。有人问这家与函馆JR旅馆之间怎么选，两家酒店都很好，早餐也非常好，普乐美在顶楼有静吧，暁调的很好P13；JR旅馆有温泉，晚上泡汤很合适。
-                                    </p>
-                                </li>
-                                <li>
-                                    <p class="font-medium">📍五稜郭公园（P5-P8）</p>
-                                    <p class="text-gray-700">
-                                        🗺️从函馆JR站公交站台出发，坐5A和5B，时刻表P18，一站就到。五稜郭塔可以拍到星状的公园，最美是樱花盛开的时候，之前的一篇上传过。P15可以看四季的五稜郭。
-                                    </p>
-                                </li>
-                                <li>
-                                    <p class="font-medium">📍金森仓库&小丑汉堡（P9-P10）</p>
-                                    <p class="text-gray-700">🗺️从酒店导航步行1.5公里左右就可以到达，红砖仓库对面就有函馆限定小丑汉堡。</p>
-                                </li>
-                                <li>
-                                    <p class="font-medium">📍八幡坂（P11）</p>
-                                    <p class="text-gray-700">🗺️连接函馆红砖仓库和函馆山的一条上坡路，P14是四季的八幡坂。</p>
-                                </li>
-                                <li>
-                                    <p class="font-medium">📍函馆山百万夜景（P1）</p>
-                                    <p class="text-gray-700">
-                                        🗺️走到八幡坂最上面，延东南方向小路一直走，路过很多教会后抵达函馆山缆车，乘缆车上山看夜景。注意：缆车今年10月9日至11月9日停运，只能乘坐巴士和出租车上山。11月9日之后登山道关闭，只能缆车上山。
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 第3天 -->
-            <div id="day3" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.23 <span class="text-lg font-normal ml-2">住登别</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-train text-secondary mr-2"></i>交通
-                            </h3>
-                            <p class="ml-6">函馆-登别 1501-1734</p>
-                            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-26.png" alt="函馆到登别交通" class="w-full h-auto">
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-27.png" alt="函馆到登别时刻表" class="w-full h-auto">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-train text-secondary mr-2"></i>下午
+                                </h3>
+                                <p class="ml-6">新千岁-函馆 1350-1713</p>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-21.png" alt="新千岁-函馆" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">新千岁-函馆</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-34.png" alt="特急北斗南千岁函馆" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">特急北斗南千岁函馆</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 第4天 -->
-            <div id="day4" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.24 <span class="text-lg font-normal ml-2">住登别</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-4">登别一日游</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <img data-src="image-24.png" alt="景点罗列" class="w-full h-auto">
-                                    <p class="text-sm text-gray-600 mt-1">景点罗列</p>
+                <!-- 第2天 -->
+                <div id="hokkaido-day2" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.22 <span class="text-lg font-normal ml-2">住函馆</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>行程安排
+                                </h3>
+                                <ul class="ml-6 list-disc space-y-2">
+                                    <li>第一天步行金森仓库，八幡坂，函馆山夜景</li>
+                                    <li>第二天上午去五棱郭公园，下午去大沼公园P17，可以从JR函馆站坐JR20分钟达到</li>
+                                </ul>
+                                <div class="mt-4">
+                                    <img data-src="image-22.png" alt="时刻表" class="w-full h-auto">
+                                    <p class="text-sm text-gray-600 mt-1">时刻表</p>
                                 </div>
-                                <div>
-                                    <img data-src="image-25.png" alt="具体行程和交通参考" class="w-full h-auto">
-                                    <p class="text-sm text-gray-600 mt-1">具体行程和交通参考</p>
+                                <p class="mt-4 ml-6">看小红书去年11.18是秋末冬初的景色（下图1、2），感觉可以落地直接函馆赌一下红叶（五棱郭公园），概率也很小就是了</p>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-4">主要景点</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="c2ba05a4726545cb8e917a70d134e3dc.jpg" alt="函馆红叶"
+                                            class="w-full h-auto">
+                                        <p class="text-center text-sm font-medium p-2">五棱郭公园</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-19.png" alt="国定公园" class="w-full h-auto">
+                                        <p class="text-center text-sm font-medium p-2">大沼国定公园</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-20.png" alt="修道院" class="w-full h-auto">
+                                        <p class="text-center text-sm font-medium p-2">修道院</p>
+                                    </div>
+                                </div>
+                                <p class="mt-4 ml-6">还有函馆山、红砖仓库等等的</p>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-detective text-secondary mr-2"></i>柯南巡礼路线
+                                </h3>
+                                <ul class="ml-6 space-y-4">
+                                    <li>
+                                        <p class="font-medium">📍JR函馆站（P2）</p>
+                                        <p class="text-gray-700">🗺️所有行程的开始，札幌->函馆JR特级北斗号的终点站。</p>
+                                    </li>
+                                    <li>
+                                        <p class="font-medium">📍普乐美雅凯酒店（P3-P4）</p>
+                                        <p class="text-gray-700">
+                                            🗺️在JR函馆站隔壁，步行160米，是柯南动漫里的，酒店很不错。有人问这家与函馆JR旅馆之间怎么选，两家酒店都很好，早餐也非常好，普乐美在顶楼有静吧，暁调的很好P13；JR旅馆有温泉，晚上泡汤很合适。
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p class="font-medium">📍五稜郭公园（P5-P8）</p>
+                                        <p class="text-gray-700">
+                                            🗺️从函馆JR站公交站台出发，坐5A和5B，时刻表P18，一站就到。五稜郭塔可以拍到星状的公园，最美是樱花盛开的时候，之前的一篇上传过。P15可以看四季的五稜郭。
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p class="font-medium">📍金森仓库&小丑汉堡（P9-P10）</p>
+                                        <p class="text-gray-700">🗺️从酒店导航步行1.5公里左右就可以到达，红砖仓库对面就有函馆限定小丑汉堡。</p>
+                                    </li>
+                                    <li>
+                                        <p class="font-medium">📍八幡坂（P11）</p>
+                                        <p class="text-gray-700">🗺️连接函馆红砖仓库和函馆山的一条上坡路，P14是四季的八幡坂。</p>
+                                    </li>
+                                    <li>
+                                        <p class="font-medium">📍函馆山百万夜景（P1）</p>
+                                        <p class="text-gray-700">
+                                            🗺️走到八幡坂最上面，延东南方向小路一直走，路过很多教会后抵达函馆山缆车，乘缆车上山看夜景。注意：缆车今年10月9日至11月9日停运，只能乘坐巴士和出租车上山。11月9日之后登山道关闭，只能缆车上山。
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第3天 -->
+                <div id="hokkaido-day3" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.23 <span class="text-lg font-normal ml-2">住登别</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-train text-secondary mr-2"></i>交通
+                                </h3>
+                                <p class="ml-6">函馆-登别 1501-1734</p>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-26.png" alt="函馆到登别交通" class="w-full h-auto">
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-27.png" alt="函馆到登别时刻表" class="w-full h-auto">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 第5天 -->
-            <div id="day5" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.25 <span class="text-lg font-normal ml-2">住札幌</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-train text-secondary mr-2"></i>交通
-                            </h3>
-                            <p class="ml-6">登别-札幌 1705-1823</p>
-                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="e5a32247555b7afbfb18d5e5c2f3b179.png" alt="札幌函馆时刻表"
-                                        class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">札幌函馆时刻表</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-33.png" alt="登别札幌" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">登别札幌</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-30.png" alt="晚班" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">晚班</p>
+                <!-- 第4天 -->
+                <div id="hokkaido-day4" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.24 <span class="text-lg font-normal ml-2">住登别</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-4">登别一日游</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <img data-src="image-24.png" alt="景点罗列" class="w-full h-auto">
+                                        <p class="text-sm text-gray-600 mt-1">景点罗列</p>
+                                    </div>
+                                    <div>
+                                        <img data-src="image-25.png" alt="具体行程和交通参考" class="w-full h-auto">
+                                        <p class="text-sm text-gray-600 mt-1">具体行程和交通参考</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 第6天 -->
-            <div id="day6" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.26 <span class="text-lg font-normal ml-2">住札幌</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-train text-secondary mr-2"></i>小樽一日游 - 交通
-                            </h3>
-                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-15.png" alt="小樽时刻表" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">小樽时刻表</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-37.png" alt="早班" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">早班</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-38.png" alt="晚班" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">晚班</p>
-                                </div>
-                            </div>
-                            <ul class="ml-6 list-disc space-y-1">
-                                <li>去程：札幌站➠南小樽站</li>
-                                <li>返程：小樽站➠札幌站</li>
-                                <li>车程40分钟，30分一班次，想看海景记得选右侧靠窗位置💺</li>
-                                <li>中途有经过钱函/朝里，但一定要坐普通列车</li>
-                                <li>JRPASS可用</li>
-                            </ul>
+                <!-- 第5天 -->
+                <div id="hokkaido-day5" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.25 <span class="text-lg font-normal ml-2">住札幌</span></h2>
                         </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-bus text-secondary mr-2"></i>市内交通
-                            </h3>
-                            <ul class="ml-6 list-disc space-y-1">
-                                <li>小樽很小，景点都可以步行到达</li>
-                                <li>只有去天狗山要坐大巴🚌。在小樽站🚇前乘坐大巴，可用ic卡，也可以现场买</li>
-                            </ul>
-                            <div class="mt-3">
-                                <img data-src="image-36.png" alt="天狗山大巴" class="w-full h-auto">
-                                <p class="text-sm text-gray-600 mt-1">天狗山大巴</p>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-map-o text-secondary mr-2"></i>一日游路线
-                            </h3>
-                            <p class="ml-6">
-                                南小樽站➠八音盒博物馆&蒸汽钟（0.5小时）➠小樽商业街-童话十字路口&北一哨子馆&大正哨子馆（2.5小时）➠小樽运河（0.5小时）➠三角市场（1小时）➠
-                                船见坂（0.5小时）➠天狗山（3.5小时）➠小樽站</p>
-                        </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-star text-secondary mr-2"></i>核心景点
-                            </h3>
-                            <div class="space-y-4 ml-6">
-                                <div>
-                                    <p class="font-medium">八音盒博物馆</p>
-                                    <ul class="list-disc ml-4 text-gray-700">
-                                        <li>有来自世界3000多种音乐盒，很好逛，很浪漫</li>
-                                        <li>从南小樽站出来就可以直接导航来这里，很近</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <p class="font-medium">蒸汽钟</p>
-                                    <ul class="list-disc ml-4 text-gray-700">
-                                        <li>就在八音盒前，每15分钟会喷发蒸汽，很有仪式感的响声</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <p class="font-medium">小樽商业街</p>
-                                    <ul class="list-disc ml-4 text-gray-700">
-                                        <li>一路都是各打卡点和特色商店</li>
-                                        <li>LeTAO就在街上，在蒸汽钟附近。可以⬆️三楼，风景超好，360度看小樽街景❗️</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <p class="font-medium">童话十字路口</p>
-                                    <ul class="list-disc ml-4 text-gray-700">
-                                        <li>周围欧式建筑，伴着音乐盒的声响氛围很好</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <p class="font-medium">小樽运河</p>
-                                    <ul class="list-disc ml-4 text-gray-700">
-                                        <li>路线：小樽艺术村→小樽运河→小樽运河博物馆→旧日本邮船小樽分店</li>
-                                        <li>电影《情书》的取景地，小樽乃至北海道标志性景点</li>
-                                        <li>必打卡的地标景观，河岸边是怀旧的仓库</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <p class="font-medium">船见坂</p>
-                                    <ul class="list-disc ml-4 text-gray-700">
-                                        <li>《情书》电影打卡点，三角市场边上的一条斜坡</li>
-                                        <li>一条通往大海的路🌊，超好拍</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <p class="font-medium">天狗山</p>
-                                    <ul class="list-disc ml-4 text-gray-700">
-                                        <li>小樽站前乘坐大巴，4号月台搭乘9号巴士，30分钟一班，车程25分钟</li>
-                                        <li>天狗山索道约5分钟</li>
-                                    </ul>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-train text-secondary mr-2"></i>交通
+                                </h3>
+                                <p class="ml-6">登别-札幌 1705-1823</p>
+                                <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="e5a32247555b7afbfb18d5e5c2f3b179.png" alt="札幌函馆时刻表"
+                                            class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">札幌函馆时刻表</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-33.png" alt="登别札幌" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">登别札幌</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-30.png" alt="晚班" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">晚班</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 第7天 -->
-            <div id="day7" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.27 <span class="text-lg font-normal ml-2">住旭川</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-train text-secondary mr-2"></i>交通
-                            </h3>
-                            <p class="ml-6">札幌-旭川 1400-1525</p>
-                            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-17.png" alt="札幌旭川" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">札幌旭川</p>
+                <!-- 第6天 -->
+                <div id="hokkaido-day6" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.26 <span class="text-lg font-normal ml-2">住札幌</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-train text-secondary mr-2"></i>小樽一日游 - 交通
+                                </h3>
+                                <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-15.png" alt="小樽时刻表" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">小樽时刻表</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-37.png" alt="早班" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">早班</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-38.png" alt="晚班" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">晚班</p>
+                                    </div>
                                 </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-39.png" alt="午班" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">午班</p>
+                                <ul class="ml-6 list-disc space-y-1">
+                                    <li>去程：札幌站➠南小樽站</li>
+                                    <li>返程：小樽站➠札幌站</li>
+                                    <li>车程40分钟，30分一班次，想看海景记得选右侧靠窗位置💺</li>
+                                    <li>中途有经过钱函/朝里，但一定要坐普通列车</li>
+                                    <li>JRPASS可用</li>
+                                </ul>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-bus text-secondary mr-2"></i>市内交通
+                                </h3>
+                                <ul class="ml-6 list-disc space-y-1">
+                                    <li>小樽很小，景点都可以步行到达</li>
+                                    <li>只有去天狗山要坐大巴🚌。在小樽站🚇前乘坐大巴，可用ic卡，也可以现场买</li>
+                                </ul>
+                                <div class="mt-3">
+                                    <img data-src="image-36.png" alt="天狗山大巴" class="w-full h-auto">
+                                    <p class="text-sm text-gray-600 mt-1">天狗山大巴</p>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-map-o text-secondary mr-2"></i>行程安排
-                            </h3>
-                            <div class="space-y-4 ml-6">
-                                <div>
-                                    <p class="font-medium">札幌上午：</p>
-                                    <p class="text-gray-700">中岛公园（2小时）➠ 薄野&狸小路商店街（2小时）+中餐➠札幌电视塔&大通公园（0.5小时）➠时计台（0.5小时）
-                                        ➠旧本厅舍（0.5小时）➠啤酒博物馆（1小时）➠白色恋人公园（1.5小时）➠回薄野晚餐</p>
-                                    <p class="text-gray-700">需地铁🚊+步行🚶</p>
-                                </div>
-                                <div>
-                                    <p class="font-medium">旭川下午：</p>
-                                    <p class="text-gray-700">旭岳大雪山？得早上去，不太行（不逛札幌可以早点到旭川去大雪山）</p>
-                                    <p class="text-gray-700">旭山动物园好像评价不咋样</p>
-                                    <p class="text-gray-700">逛逛市区/晚点再到旭川</p>
-                                </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>一日游路线
+                                </h3>
+                                <p class="ml-6">
+                                    南小樽站➠八音盒博物馆&蒸汽钟（0.5小时）➠小樽商业街-童话十字路口&北一哨子馆&大正哨子馆（2.5小时）➠小樽运河（0.5小时）➠三角市场（1小时）➠
+                                    船见坂（0.5小时）➠天狗山（3.5小时）➠小樽站</p>
                             </div>
-                        </div>
 
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-4">旭川景点参考</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-45.png" alt="旭岳大雪山十一月长这样" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">旭岳大雪山十一月长这样</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-40.png" alt="旭川景点罗列" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">旭川景点罗列</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-41.png" alt="xhs推荐行程" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">xhs推荐行程</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-42.png" alt="美瑛旭川时间" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">美瑛旭川时间</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-ship text-secondary mr-2"></i>旭岳 大雪山国立公园
-                            </h3>
-                            <div class="space-y-3 ml-6">
-                                <div>
-                                    <p class="font-medium">🚌交通</p>
-                                    <p class="text-gray-700">在9号巴士站台坐66路到终点站</p>
-                                    <p class="text-gray-700">班次少，建议提前看好时间，我选择了9:15的班次</p>
-                                    <p class="text-gray-700">购票在Y‘s Hotel楼下的票务中心，机器上投币自助购票</p>
-                                    <p class="text-gray-700">可以直接按单程买好往返的票，如2人往返票就买4张单人单程票即可，总票价1800×4=7200日元</p>
-                                </div>
-                                <div>
-                                    <p class="font-medium">🚡缆车</p>
-                                    <p class="text-gray-700">巴士抵达旭岳后乘坐缆车上山，每15分钟一班</p>
-                                </div>
-                                <div>
-                                    <p class="font-medium">⛰️徒步</p>
-                                    <p class="text-gray-700">按照推荐路线徒步一周，山路原始，碎石较多，一定要穿好走路的户外鞋</p>
-                                </div>
-                                <div>
-                                    <p class="font-medium">🚌返程</p>
-                                    <p class="text-gray-700">缆车下山坐15:55的66路末班车回旭川</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 第8天 -->
-            <div id="day8" class="mb-16 relative pl-16">
-                <div class="timeline-line"></div>
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.28 <span class="text-lg font-normal ml-2">住旭川</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-map-o text-secondary mr-2"></i>行程安排
-                            </h3>
-                            <p class="ml-6">旭川-美瑛-旭川</p>
-
-                            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <h4 class="font-medium mb-2 text-center">去程</h4>
-                                    <img data-src="image-43.png" alt="去程" class="w-full h-auto">
-                                </div>
-                                <div>
-                                    <h4 class="font-medium mb-2 text-center">回程</h4>
-                                    <img data-src="image-44.png" alt="回程" class="w-full h-auto">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-4">去年十一月的美瑛</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-46.png" alt="十一月美瑛1" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">白须</p>
-                                </div>
-                                <div class="rounded-lg overflow-hidden shadow-sm">
-                                    <img data-src="image-47.png" alt="十一月美瑛2" class="w-full h-auto">
-                                    <p class="text-center text-sm text-gray-600 p-2">青池</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-map text-secondary mr-2"></i>美瑛富良野一日游
-                            </h3>
-                            <div class="space-y-3 ml-6">
-                                <div>
-                                    <p class="font-medium">🚞交通</p>
-                                    <p class="text-gray-700">坐8:44富良野线到美瑛站下</p>
-                                    <p class="text-gray-700">⚠️美瑛站不支持刷西瓜卡，建议上车前买票或者和我们一样只能出站时现金补票了</p>
-                                    <p class="text-gray-700">出站后到旁边的四季情报馆买美游巴士半日游票，4000日元/人</p>
-                                </div>
-                                <div>
-                                    <p class="font-medium">🚌美游巴士A线</p>
-                                    <p class="text-gray-700">时间：9:45-12:50</p>
-                                    <p class="text-gray-700">路线：白金青池→白须瀑布→四季彩之丘→新荣之丘</p>
-                                    <p class="text-gray-700">因为美瑛景点相距较远且本人不会骑车，强烈推荐这趟半日游团</p>
-                                </div>
-                                <div>
-                                    <p class="font-medium">🚌美瑛→富良野</p>
-                                    <p class="text-gray-700">坐13:27旭川线到中富良野站下</p>
-                                    <p class="text-gray-700">⚠️务必提前查验车的班次时间，有时Google Map并不完全可靠</p>
-                                    <p class="text-gray-700">
-                                        我们是10/1去的，恰巧巴士时刻表从10/1起有调整，而谷歌并未实时更新，车比前一天提前了10分钟到站所幸我们提前到站没有错过</p>
-                                    <p class="text-gray-700">⚠️要注意巴士需要自备现金零钱，不设找零，也不收5000、10000大面额纸币</p>
-                                    <p class="text-gray-700">下车后步行去富田农场，会经过北星山展望台，但10月缆车已关闭，所以也仅是路过，也顺道看了眼中富良野神社(可不去)
-                                    </p>
-                                </div>
-                                <div>
-                                    <p class="font-medium">🚅返回</p>
-                                    <p class="text-gray-700">JR站坐JR富良野线回旭川，大约1小时左右一班</p>
-                                    <p class="text-gray-700">如时间和班次合适，也可以坐末班巴士原路返回</p>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-star text-secondary mr-2"></i>核心景点
+                                </h3>
+                                <div class="space-y-4 ml-6">
+                                    <div>
+                                        <p class="font-medium">八音盒博物馆</p>
+                                        <ul class="list-disc ml-4 text-gray-700">
+                                            <li>有来自世界3000多种音乐盒，很好逛，很浪漫</li>
+                                            <li>从南小樽站出来就可以直接导航来这里，很近</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">蒸汽钟</p>
+                                        <ul class="list-disc ml-4 text-gray-700">
+                                            <li>就在八音盒前，每15分钟会喷发蒸汽，很有仪式感的响声</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">小樽商业街</p>
+                                        <ul class="list-disc ml-4 text-gray-700">
+                                            <li>一路都是各打卡点和特色商店</li>
+                                            <li>LeTAO就在街上，在蒸汽钟附近。可以⬆️三楼，风景超好，360度看小樽街景❗️</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">童话十字路口</p>
+                                        <ul class="list-disc ml-4 text-gray-700">
+                                            <li>周围欧式建筑，伴着音乐盒的声响氛围很好</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">小樽运河</p>
+                                        <ul class="list-disc ml-4 text-gray-700">
+                                            <li>路线：小樽艺术村→小樽运河→小樽运河博物馆→旧日本邮船小樽分店</li>
+                                            <li>电影《情书》的取景地，小樽乃至北海道标志性景点</li>
+                                            <li>必打卡的地标景观，河岸边是怀旧的仓库</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">船见坂</p>
+                                        <ul class="list-disc ml-4 text-gray-700">
+                                            <li>《情书》电影打卡点，三角市场边上的一条斜坡</li>
+                                            <li>一条通往大海的路🌊，超好拍</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">天狗山</p>
+                                        <ul class="list-disc ml-4 text-gray-700">
+                                            <li>小樽站前乘坐大巴，4号月台搭乘9号巴士，30分钟一班，车程25分钟</li>
+                                            <li>天狗山索道约5分钟</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 第9天 -->
-            <div id="day9" class="mb-16 relative pl-16">
-                <div class="timeline-dot"></div>
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                    <div class="bg-primary text-white p-4">
-                        <h2 class="text-2xl font-bold">11.29 <span class="text-lg font-normal ml-2">返程</span></h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-6">
-                            <h3 class="font-semibold text-lg mb-2 flex items-center">
-                                <i class="fa fa-plane text-secondary mr-2"></i>返程交通
-                            </h3>
-                            <p class="ml-6">旭川-新千岁机场 0944-1206</p>
-                            <div class="mt-4">
-                                <img data-src="image-32.png" alt="旭川机场" class="w-full h-auto">
-                                <p class="text-sm text-gray-600 mt-1">旭川机场</p>
+                <!-- 第7天 -->
+                <div id="hokkaido-day7" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.27 <span class="text-lg font-normal ml-2">住旭川</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-train text-secondary mr-2"></i>交通
+                                </h3>
+                                <p class="ml-6">札幌-旭川 1400-1525</p>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-17.png" alt="札幌旭川" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">札幌旭川</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-39.png" alt="午班" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">午班</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>行程安排
+                                </h3>
+                                <div class="space-y-4 ml-6">
+                                    <div>
+                                        <p class="font-medium">札幌上午：</p>
+                                        <p class="text-gray-700">中岛公园（2小时）➠
+                                            薄野&狸小路商店街（2小时）+中餐➠札幌电视塔&大通公园（0.5小时）➠时计台（0.5小时）
+                                            ➠旧本厅舍（0.5小时）➠啤酒博物馆（1小时）➠白色恋人公园（1.5小时）➠回薄野晚餐</p>
+                                        <p class="text-gray-700">需地铁🚊+步行🚶</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">旭川下午：</p>
+                                        <p class="text-gray-700">旭岳大雪山？得早上去，不太行（不逛札幌可以早点到旭川去大雪山）</p>
+                                        <p class="text-gray-700">旭山动物园好像评价不咋样</p>
+                                        <p class="text-gray-700">逛逛市区/晚点再到旭川</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-4">旭川景点参考</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-45.png" alt="旭岳大雪山十一月长这样" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">旭岳大雪山十一月长这样</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-40.png" alt="旭川景点罗列" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">旭川景点罗列</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-41.png" alt="xhs推荐行程" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">xhs推荐行程</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-42.png" alt="美瑛旭川时间" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">美瑛旭川时间</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-ship text-secondary mr-2"></i>旭岳 大雪山国立公园
+                                </h3>
+                                <div class="space-y-3 ml-6">
+                                    <div>
+                                        <p class="font-medium">🚌交通</p>
+                                        <p class="text-gray-700">在9号巴士站台坐66路到终点站</p>
+                                        <p class="text-gray-700">班次少，建议提前看好时间，我选择了9:15的班次</p>
+                                        <p class="text-gray-700">购票在Y‘s Hotel楼下的票务中心，机器上投币自助购票</p>
+                                        <p class="text-gray-700">可以直接按单程买好往返的票，如2人往返票就买4张单人单程票即可，总票价1800×4=7200日元</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">🚡缆车</p>
+                                        <p class="text-gray-700">巴士抵达旭岳后乘坐缆车上山，每15分钟一班</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">⛰️徒步</p>
+                                        <p class="text-gray-700">按照推荐路线徒步一周，山路原始，碎石较多，一定要穿好走路的户外鞋</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">🚌返程</p>
+                                        <p class="text-gray-700">缆车下山坐15:55的66路末班车回旭川</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="mb-6 bg-neutral p-4 rounded-lg">
-                            <h3 class="font-semibold text-lg mb-3">雪场备选方案</h3>
-                            <p class="mb-3">如果去隐士/突然提前开板，就把11.27及以后的改成雪场</p>
+                <!-- 第8天 -->
+                <div id="hokkaido-day8" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.28 <span class="text-lg font-normal ml-2">住旭川</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>行程安排
+                                </h3>
+                                <p class="ml-6">旭川-美瑛-旭川</p>
 
-                            <h4 class="font-medium mb-2">从札幌市区前往二世谷（Sapporo=Niseko）</h4>
-                            <p class="mb-2">新千岁机场预约巴士里也有 预定方法类似大家可参考</p>
-                            <p class="mb-3">从札幌市区前往二世谷交通分为BUS、JR两种</p>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <h4 class="font-medium mb-2 text-center">去程</h4>
+                                        <img data-src="image-43.png" alt="去程" class="w-full h-auto">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium mb-2 text-center">回程</h4>
+                                        <img data-src="image-44.png" alt="回程" class="w-full h-auto">
+                                    </div>
+                                </div>
+                            </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-4">去年十一月的美瑛</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-46.png" alt="十一月美瑛1" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">白须</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="image-47.png" alt="十一月美瑛2" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">青池</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map text-secondary mr-2"></i>美瑛富良野一日游
+                                </h3>
+                                <div class="space-y-3 ml-6">
+                                    <div>
+                                        <p class="font-medium">🚞交通</p>
+                                        <p class="text-gray-700">坐8:44富良野线到美瑛站下</p>
+                                        <p class="text-gray-700">⚠️美瑛站不支持刷西瓜卡，建议上车前买票或者和我们一样只能出站时现金补票了</p>
+                                        <p class="text-gray-700">出站后到旁边的四季情报馆买美游巴士半日游票，4000日元/人</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">🚌美游巴士A线</p>
+                                        <p class="text-gray-700">时间：9:45-12:50</p>
+                                        <p class="text-gray-700">路线：白金青池→白须瀑布→四季彩之丘→新荣之丘</p>
+                                        <p class="text-gray-700">因为美瑛景点相距较远且本人不会骑车，强烈推荐这趟半日游团</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">🚌美瑛→富良野</p>
+                                        <p class="text-gray-700">坐13:27旭川线到中富良野站下</p>
+                                        <p class="text-gray-700">⚠️务必提前查验车的班次时间，有时Google Map并不完全可靠</p>
+                                        <p class="text-gray-700">
+                                            我们是10/1去的，恰巧巴士时刻表从10/1起有调整，而谷歌并未实时更新，车比前一天提前了10分钟到站所幸我们提前到站没有错过</p>
+                                        <p class="text-gray-700">⚠️要注意巴士需要自备现金零钱，不设找零，也不收5000、10000大面额纸币</p>
+                                        <p class="text-gray-700">
+                                            下车后步行去富田农场，会经过北星山展望台，但10月缆车已关闭，所以也仅是路过，也顺道看了眼中富良野神社(可不去)</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">🚅返回</p>
+                                        <p class="text-gray-700">JR站坐JR富良野线回旭川，大约1小时左右一班</p>
+                                        <p class="text-gray-700">如时间和班次合适，也可以坐末班巴士原路返回</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第9天 -->
+                <div id="hokkaido-day9" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">11.29 <span class="text-lg font-normal ml-2">返程</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-plane text-secondary mr-2"></i>返程交通
+                                </h3>
+                                <p class="ml-6">旭川-新千岁机场 0944-1206</p>
+                                <div class="mt-4">
+                                    <img data-src="image-32.png" alt="旭川机场" class="w-full h-auto">
+                                    <p class="text-sm text-gray-600 mt-1">旭川机场</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-6 bg-neutral p-4 rounded-lg">
+                                <h3 class="font-semibold text-lg mb-3">雪场备选方案</h3>
+                                <p class="mb-3">如果去隐士/突然提前开板，就把11.27及以后的改成雪场</p>
+
+                                <h4 class="font-medium mb-2">从札幌市区前往二世谷（Sapporo=Niseko）</h4>
+                                <p class="mb-2">新千岁机场预约巴士里也有 预定方法类似大家可参考</p>
+                                <p class="mb-3">从札幌市区前往二世谷交通分为BUS、JR两种</p>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div class="bg-white p-3 rounded shadow-sm">
+                                        <h5 class="font-medium text-primary mb-1">🚌Bus</h5>
+                                        <p class="text-sm">优势：基本直达雪场 大件行李友好 整体用时更短</p>
+                                        <p class="text-sm">劣势：发车时间固定 2个巴士需提前预约 另1个非预约巴士人多可能会站一截</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded shadow-sm">
+                                        <h5 class="font-medium text-primary mb-1">🚄JR</h5>
+                                        <p class="text-sm">优势：时间较巴士更灵活</p>
+                                        <p class="text-sm">劣势：需换乘多趟 下JR后仍需转乘当地BUS前往雪场 整体耗时更长</p>
+                                    </div>
+                                </div>
+
+                                <h4 class="font-medium mb-2">需预约巴士 可直达雪场</h4>
+                                <div class="space-y-3 mb-4">
+                                    <div class="bg-white p-3 rounded shadow-sm">
+                                        <p class="font-medium">1.CHOU BUS 北海道中央巴士</p>
+                                        <ol class="list-decimal ml-4 text-sm space-y-1">
+                                            <li>链接见评论置顶</li>
+                                            <li>进入官网后可选中文 支付链接请看自己邮箱内的回执</li>
+                                            <li>成人单程5000JPY 往返8500JPY。站点很多直达各雪场（P2 3）这个巴士要求至少提前两天预约 而且经常约满 一定要提前约</li>
+                                        </ol>
+                                    </div>
+                                    <div class="bg-white p-3 rounded shadow-sm">
+                                        <p class="font-medium">2.HOKKAIDO RESORT LINER 北海道度假线</p>
+                                        <ol class="list-decimal ml-4 text-sm space-y-1">
+                                            <li>链接见评论置顶</li>
+                                            <li>进官网后选only bus plan</li>
+                                            <li>成人5500JPY 多站点 终点站是hirafu游客中心（出发去二世谷任意雪场都有BUS）请见（P456） 付款方式接受信用卡及便利店机器上付款
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </div>
+
+                                <h4 class="font-medium mb-2">非预约巴士</h4>
                                 <div class="bg-white p-3 rounded shadow-sm">
-                                    <h5 class="font-medium text-primary mb-1">🚌Bus</h5>
-                                    <p class="text-sm">优势：基本直达雪场 大件行李友好 整体用时更短</p>
-                                    <p class="text-sm">劣势：发车时间固定 2个巴士需提前预约 另1个非预约巴士人多可能会站一截</p>
+                                    <p class="font-medium">1.北海道中央巴士</p>
+                                    <p class="text-sm">每日三班 8:35 10:35 13:35 （P7）</p>
+                                    <p class="text-sm">始发站：札幌站前（P8）</p>
+                                    <p class="text-sm">目的地：俱知安</p>
+                                    <p class="text-sm">由于本巴士经停小樽 所以车上人数可能较多 建议从札幌駅前上车 确保有座位不用站 具体站点link请用Google maps打开获取
+                                    </p>
                                 </div>
-                                <div class="bg-white p-3 rounded shadow-sm">
-                                    <h5 class="font-medium text-primary mb-1">🚄JR</h5>
-                                    <p class="text-sm">优势：时间较巴士更灵活</p>
-                                    <p class="text-sm">劣势：需换乘多趟 下JR后仍需转乘当地BUS前往雪场 整体耗时更长</p>
+
+                                <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400">
+                                    <p class="font-medium text-yellow-800">📌非常重要</p>
+                                    <p class="text-sm text-yellow-700">本车非直达雪场 可以理解为到山下的镇上 所以需在‼️俱知安下车‼️换乘当地BUS上山
+                                        当地巴士无法用IC卡（西瓜卡等）只接受现金或信用卡支付</p>
                                 </div>
-                            </div>
 
-                            <h4 class="font-medium mb-2">需预约巴士 可直达雪场</h4>
-                            <div class="space-y-3 mb-4">
-                                <div class="bg-white p-3 rounded shadow-sm">
-                                    <p class="font-medium">1.CHOU BUS 北海道中央巴士</p>
-                                    <ol class="list-decimal ml-4 text-sm space-y-1">
-                                        <li>链接见评论置顶</li>
-                                        <li>进入官网后可选中文 支付链接请看自己邮箱内的回执</li>
-                                        <li>成人单程5000JPY 往返8500JPY。站点很多直达各雪场（P2 3）这个巴士要求至少提前两天预约 而且经常约满 一定要提前约</li>
-                                    </ol>
-                                </div>
-                                <div class="bg-white p-3 rounded shadow-sm">
-                                    <p class="font-medium">2.HOKKAIDO RESORT LINER 北海道度假线</p>
-                                    <ol class="list-decimal ml-4 text-sm space-y-1">
-                                        <li>链接见评论置顶</li>
-                                        <li>进官网后选only bus plan</li>
-                                        <li>成人5500JPY 多站点 终点站是hirafu游客中心（出发去二世谷任意雪场都有BUS）请见（P456） 付款方式接受信用卡及便利店机器上付款
-                                        </li>
-                                    </ol>
-                                </div>
+                                <p class="text-sm text-gray-500 mt-3">🫶🏽link来自网友Aaron 侵删</p>
                             </div>
-
-                            <h4 class="font-medium mb-2">非预约巴士</h4>
-                            <div class="bg-white p-3 rounded shadow-sm">
-                                <p class="font-medium">1.北海道中央巴士</p>
-                                <p class="text-sm">每日三班 8:35 10:35 13:35 （P7）</p>
-                                <p class="text-sm">始发站：札幌站前（P8）</p>
-                                <p class="text-sm">目的地：俱知安</p>
-                                <p class="text-sm">由于本巴士经停小樽 所以车上人数可能较多 建议从札幌駅前上车 确保有座位不用站 具体站点link请用Google maps打开获取</p>
-                            </div>
-
-                            <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400">
-                                <p class="font-medium text-yellow-800">📌非常重要</p>
-                                <p class="text-sm text-yellow-700">本车非直达雪场 可以理解为到山下的镇上 所以需在‼️俱知安下车‼️换乘当地BUS上山
-                                    当地巴士无法用IC卡（西瓜卡等）只接受现金或信用卡支付</p>
-                            </div>
-
-                            <p class="text-sm text-gray-500 mt-3">🫶🏽link来自网友Aaron 侵删</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 补充信息 -->
-            <div id="supplement" class="mb-16 bg-white rounded-xl shadow-lg overflow-hidden p-6 card-hover">
-                <div class="bg-primary text-white p-4 mb-6 rounded-lg">
-                    <h2 class="text-2xl font-bold">补充信息</h2>
-                </div>
+                <!-- 补充信息 -->
+                <div id="hokkaido-supplement"
+                    class="mb-16 bg-white rounded-xl shadow-lg overflow-hidden p-6 card-hover">
+                    <div class="bg-primary text-white p-4 mb-6 rounded-lg">
+                        <h2 class="text-2xl font-bold">北海道补充信息</h2>
+                    </div>
 
-                <div class="mb-8">
-                    <h3 class="font-semibold text-xl mb-4 text-primary">JR Pass 票价信息</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="rounded-lg overflow-hidden shadow-sm">
-                            <img data-src="image-13.png" alt="官网5日游" class="w-full h-auto">
-                            <p class="text-center text-sm font-medium p-2">JR官网5日游¥22,000</p>
+                    <div class="mb-8">
+                        <h3 class="font-semibold text-xl mb-4 text-primary">JR Pass 票价信息</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="rounded-lg overflow-hidden shadow-sm">
+                                <img data-src="image-13.png" alt="官网5日游" class="w-full h-auto">
+                                <p class="text-center text-sm font-medium p-2">JR官网5日游¥22,000</p>
+                            </div>
+                            <div class="rounded-lg overflow-hidden shadow-sm">
+                                <img data-src="image-6.png" alt="官网7日游" class="w-full h-auto">
+                                <p class="text-center text-sm font-medium p-2">JR官网7日游¥28,000</p>
+                            </div>
+                            <div class="rounded-lg overflow-hidden shadow-sm">
+                                <img data-src="image-10.png" alt="官网10日游" class="w-full h-auto">
+                                <p class="text-center text-sm font-medium p-2">JR官网10日行程¥37,000</p>
+                            </div>
                         </div>
-                        <div class="rounded-lg overflow-hidden shadow-sm">
-                            <img data-src="image-6.png" alt="官网7日游" class="w-full h-auto">
-                            <p class="text-center text-sm font-medium p-2">JR官网7日游¥28,000</p>
-                        </div>
-                        <div class="rounded-lg overflow-hidden shadow-sm">
-                            <img data-src="image-10.png" alt="官网10日游" class="w-full h-auto">
-                            <p class="text-center text-sm font-medium p-2">JR官网10日行程¥37,000</p>
+                        <p class="mt-4 text-gray-700">xhs说在klook上有活动的话多日票更便宜</p>
+                    </div>
+
+                    <div class="mb-8">
+                        <h3 class="font-semibold text-xl mb-4 text-primary">推荐活动与地图</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="rounded-lg overflow-hidden shadow-sm">
+                                <img data-src="image-9.png" alt="道央道南活动" class="w-full h-auto">
+                                <p class="text-center text-sm font-medium p-2">可以去的活动</p>
+                            </div>
+                            <div class="rounded-lg overflow-hidden shadow-sm">
+                                <img data-src="image-7.png" alt="官网主要景点地图" class="w-full h-auto">
+                                <p class="text-center text-sm font-medium p-2">官网主要景点地图</p>
+                            </div>
+                            <div class="rounded-lg overflow-hidden shadow-sm">
+                                <img data-src="image-11.png" alt="道北" class="w-full h-auto">
+                                <p class="text-center text-sm font-medium p-2">道北</p>
+                            </div>
+                            <div class="rounded-lg overflow-hidden shadow-sm">
+                                <img data-src="image.png" alt="城际移动距离" class="w-full h-auto">
+                                <p class="text-center text-sm font-medium p-2">城际国道移动距离</p>
+                            </div>
                         </div>
                     </div>
-                    <p class="mt-4 text-gray-700">xhs说在klook上有活动的话多日票更便宜</p>
                 </div>
-
-                <div class="mb-8">
-                    <h3 class="font-semibold text-xl mb-4 text-primary">推荐活动与地图</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="rounded-lg overflow-hidden shadow-sm">
-                            <img data-src="image-9.png" alt="道央道南活动" class="w-full h-auto">
-                            <p class="text-center text-sm font-medium p-2">可以去的活动</p>
-                        </div>
-                        <div class="rounded-lg overflow-hidden shadow-sm">
-                            <img data-src="image-7.png" alt="官网主要景点地图" class="w-full h-auto">
-                            <p class="text-center text-sm font-medium p-2">官网主要景点地图</p>
-                        </div>
-                        <div class="rounded-lg overflow-hidden shadow-sm">
-                            <img data-src="image-11.png" alt="道北" class="w-full h-auto">
-                            <p class="text-center text-sm font-medium p-2">道北</p>
-                        </div>
-                        <div class="rounded-lg overflow-hidden shadow-sm">
-                            <img data-src="image.png" alt="城际移动距离" class="w-full h-auto">
-                            <p class="text-center text-sm font-medium p-2">城际国道移动距离</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- 页脚 -->
-    <footer class="bg-primary text-white py-8">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <h3 class="text-xl font-bold mb-2">北海道旅行计划</h3>
-                    <p class="text-white/80">11月21日 - 11月29日</p>
-                </div>
-                <div class="flex space-x-4">
-                    <a href="#" class="hover:text-secondary transition-colors">
-                        <i class="fa fa-map-o text-xl"></i>
-                    </a>
-                    <a href="#" class="hover:text-secondary transition-colors">
-                        <i class="fa fa-camera text-xl"></i>
-                    </a>
-                    <a href="#" class="hover:text-secondary transition-colors">
-                        <i class="fa fa-question-circle text-xl"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="mt-6 pt-6 border-t border-white/20 text-center text-white/60 text-sm">
-                <p>© 2023 北海道旅行计划 | 整理制作</p>
-            </div>
+            </section>
         </div>
-    </footer>
 
-    <!-- 返回顶部按钮 -->
-    <button id="backToTop"
-        class="fixed bottom-6 right-6 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 transition-opacity duration-300">
-        <i class="fa fa-arrow-up"></i>
-    </button>
+        <!-- 九州页面（完整8天行程） -->
+        <div class="page" id="page-kyushu">
+            <!-- 九州旅行概览 -->
+            <section class="mb-16 text-center">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6 text-primary">九州8天7夜旅行计划</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-calendar text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">8天7晚</h3>
+                        <p class="text-gray-600">福冈→长崎→熊本→由布院→别府</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-map-marker text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">5个城市</h3>
+                        <p class="text-gray-600">福冈、长崎、熊本、由布院、别府</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-train text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">交通方式</h3>
+                        <p class="text-gray-600">JR九州Pass + 市内交通</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <i class="fa fa-camera text-3xl text-primary mb-4"></i>
+                        <h3 class="font-semibold text-lg mb-2">核心景点</h3>
+                        <p class="text-gray-600">长崎和平公园、熊本城、由布院温泉</p>
+                    </div>
+                </div>
+            </section>
 
-    <script>
-        // 移动端菜单切换
-        document.getElementById('menuToggle').addEventListener('click', function () {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        });
+            <!-- 九州每日行程 -->
+            <section class="max-w-5xl mx-auto">
+                <!-- Day1 福冈 -->
+                <div id="kyushu-day1" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">Day1 <span class="text-lg font-normal ml-2">住福冈</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-plane text-secondary mr-2"></i>上午
+                                </h3>
+                                <p class="ml-6">国内→福冈机场（建议选择早班机，10点前抵达）</p>
+                                <div class="mt-4 rounded-lg overflow-hidden shadow-sm">
+                                    <img data-src="kyushu-fukuoka-airport.jpg" alt="福冈机场" class="w-full h-auto">
+                                    <p class="text-center text-sm text-gray-600 p-2">福冈机场</p>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>下午行程
+                                </h3>
+                                <ul class="ml-6 list-disc space-y-2">
+                                    <li>机场→酒店寄存行李（推荐博多站附近）</li>
+                                    <li>博多运河城（购物+午餐，1.5小时）</li>
+                                    <li>栉田神社（福冈地标，0.5小时）</li>
+                                    <li>博多河畔城（散步+拍照，1小时）</li>
+                                </ul>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-canal-city.jpg" alt="博多运河城" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">博多运河城</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-kushida-shrine.jpg" alt="栉田神社" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">栉田神社</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-cutlery text-secondary mr-2"></i>晚餐
+                                </h3>
+                                <p class="ml-6">博多拉面街（推荐一蘭拉面、一风堂）</p>
+                                <div class="mt-4 rounded-lg overflow-hidden shadow-sm">
+                                    <img data-src="kyushu-ramen.jpg" alt="博多拉面" class="w-full h-auto">
+                                    <p class="text-center text-sm text-gray-600 p-2">博多拉面街</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        // 点击导航链接关闭移动菜单
-        document.querySelectorAll('#mobileMenu a').forEach(link => {
-            link.addEventListener('click', function () {
-                document.getElementById('mobileMenu').classList.add('hidden');
-            });
-        });
+                <!-- Day2 福冈→长崎 -->
+                <div id="kyushu-day2" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">Day2 <span class="text-lg font-normal ml-2">住长崎</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-train text-secondary mr-2"></i>交通
+                                </h3>
+                                <p class="ml-6">博多站→长崎站（JR特急，约2.5小时，JR九州Pass可用）</p>
+                                <div class="mt-4 rounded-lg overflow-hidden shadow-sm">
+                                    <img data-src="kyushu-jr.jpg" alt="JR九州特急" class="w-full h-auto">
+                                    <p class="text-center text-sm text-gray-600 p-2">JR九州特急列车</p>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>下午行程
+                                </h3>
+                                <ul class="ml-6 list-disc space-y-2">
+                                    <li>长崎和平公园（世界文化遗产，1小时）</li>
+                                    <li>原爆纪念馆（历史纪念，1小时）</li>
+                                    <li>稻佐山夜景（世界三大夜景之一，1.5小时）</li>
+                                </ul>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-peace-park.jpg" alt="长崎和平公园" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">长崎和平公园</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-inasayama-night.jpg" alt="稻佐山夜景" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">稻佐山夜景</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-cutlery text-secondary mr-2"></i>晚餐
+                                </h3>
+                                <p class="ml-6">长崎什锦面（推荐「めんまん」本店）</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
+                <!-- Day3 长崎 -->
+                <div id="kyushu-day3" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">Day3 <span class="text-lg font-normal ml-2">住长崎</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>上午行程
+                                </h3>
+                                <ul class="ml-6 list-disc space-y-2">
+                                    <li>长崎中华街（早餐+散步，1小时）</li>
+                                    <li>哥拉巴园（异人馆，1.5小时）</li>
+                                    <li>大浦天主堂（日本最古老天主堂，0.5小时）</li>
+                                </ul>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-nagasaki-chinatown.jpg" alt="长崎中华街" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">长崎中华街</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-glover-garden.jpg" alt="哥拉巴园" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">哥拉巴园</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>下午行程
+                                </h3>
+                                <ul class="ml-6 list-disc space-y-2">
+                                    <li>豪斯登堡（主题公园，3小时）</li>
+                                    <li>建议乘坐园内小火车，节省时间</li>
+                                </ul>
+                                <div class="mt-4 rounded-lg overflow-hidden shadow-sm">
+                                    <img data-src="kyushu-huis-ten-bosch.jpg" alt="豪斯登堡" class="w-full h-auto">
+                                    <p class="text-center text-sm text-gray-600 p-2">豪斯登堡</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        // 返回顶部按钮
-        const backToTopButton = document.getElementById('backToTop');
+                <!-- Day4 长崎→熊本 -->
+                <div id="kyushu-day4" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2xl font-bold">Day4 <span class="text-lg font-normal ml-2">住熊本</span></h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-train text-secondary mr-2"></i>交通
+                                </h3>
+                                <p class="ml-6">长崎站→熊本站（JR特急，约1.5小时，JR九州Pass可用）</p>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-map-o text-secondary mr-2"></i>下午行程
+                                </h3>
+                                <ul class="ml-6 list-disc space-y-2">
+                                    <li>酒店办理入住→寄存行李</li>
+                                    <li>熊本城（日本三大名城之一，2小时）</li>
+                                    <li>熊本城迹公园（散步拍照，1小时）</li>
+                                    <li>水前寺成趣园（日式庭园，1小时）</li>
+                                </ul>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-kumamoto-castle.jpg" alt="熊本城" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">熊本城</p>
+                                    </div>
+                                    <div class="rounded-lg overflow-hidden shadow-sm">
+                                        <img data-src="kyushu-suizenji-garden.jpg" alt="水前寺成趣园" class="w-full h-auto">
+                                        <p class="text-center text-sm text-gray-600 p-2">水前寺成趣园</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-lg mb-2 flex items-center">
+                                    <i class="fa fa-cutlery text-secondary mr-2"></i>晚餐
+                                </h3>
+                                <p class="ml-6">熊本城附近「九州料理 花咲」，推荐熊本黑猪肉料理</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                backToTopButton.classList.replace('opacity-0', 'opacity-100');
-            } else {
-                backToTopButton.classList.replace('opacity-100', 'opacity-0');
-            }
-        });
-
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // 图片懒加载优化实现
-        document.addEventListener("DOMContentLoaded", function () {
-            const lazyImages = [].slice.call(document.querySelectorAll("img[data-src]"));
-
-            if ("IntersectionObserver" in window) {
-                let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
-                    entries.forEach(function (entry) {
-                        if (entry.isIntersecting) {
-                            let lazyImage = entry.target;
-                            lazyImage.src = lazyImage.dataset.src;
-                            lazyImage.classList.remove('opacity-0');
-                            lazyImageObserver.unobserve(lazyImage);
-                        }
-                    });
-                });
-
-                lazyImages.forEach(function (lazyImage) {
-                    lazyImage.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-                    lazyImageObserver.observe(lazyImage);
-                });
-            } else {
-                // 降级处理：不支持IntersectionObserver时直接加载所有图片
-                lazyImages.forEach(function (lazyImage) {
-                    lazyImage.src = lazyImage.dataset.src;
-                });
-            }
-        });
-    </script>
-</body>
-
-</html>
+                <!-- Day5 熊本→由布院 -->
+                <div id="kyushu-day5" class="mb-16 relative pl-16 timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                        <div class="bg-primary text-white p-4">
+                            <h2 class="text-2
